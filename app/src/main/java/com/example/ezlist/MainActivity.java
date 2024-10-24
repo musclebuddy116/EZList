@@ -65,10 +65,11 @@ public class MainActivity extends AppCompatActivity {
                 Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 Statement statement = connection.createStatement();
 
-                ResultSet rs = statement.executeQuery("CREATE TABLE IF NOT EXISTS user_grocery_list (" +
+                statement.executeUpdate("CREATE TABLE IF NOT EXISTS user_grocery_list (" +
                         "id INT AUTO_INCREMENT PRIMARY KEY," +
                         "name VARCHAR(255) NOT NULL," +
-                        "category VARCHAR (255)");
+                        "category VARCHAR (255)" +
+                        ");");
 
                 connection.close();
 
