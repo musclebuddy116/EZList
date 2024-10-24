@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         try {
             utilFun();
+            makeDB();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -55,4 +56,28 @@ public class MainActivity extends AppCompatActivity {
             //Push working
         }).start();
     }
+
+    public void makeDB() throws SQLException {
+        new Thread(() -> {
+            StringBuilder records = new StringBuilder();
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Statement statement = connection.createStatement();
+
+                ResultSet rs = statement.executeQuery("CREATE TABLE IF NOT EXISTS user_grocery_list (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY," +
+                        "name VARCHAR(255) NOT NULL," +
+                        "category VARCHAR (255)");
+
+                connection.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }).start();
+    }
+
+
 }
