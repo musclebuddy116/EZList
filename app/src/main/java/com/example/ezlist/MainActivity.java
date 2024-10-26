@@ -1,8 +1,15 @@
 package com.example.ezlist;
 
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
+// Ensure these imports are included
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.sql.Connection;
@@ -10,77 +17,194 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
+/**
+ * Main activity for EZList app.
+ * Allows users to add items with expiration dates and notification settings.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String DATABASE_NAME = "grocery_store_data";
-    private static final String URL = "jdbc:mysql://18.117.171.203:3306/"+DATABASE_NAME;
+    private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
     private static final String USER = "android";
     private static final String PASSWORD = "android";
     public static final String TABLE_NAME = "grocery_store";
+
+    private EditText itemNameInput, itemExpirationDateInput, daysBeforeInput;
+    private Spinner categorySpinner, notificationUnitSpinner;
+    private Button addItemButton, viewItemsButton;
+
+    private ArrayList<String> categories = new ArrayList<>();
+    private ArrayAdapter<String> categoryAdapter;
+
+    // Change the type to ArrayAdapter<CharSequence>
+    private ArrayAdapter<CharSequence> unitAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {
-            utilFun();
-            makeListDB();
-            TableManipulator lm = new TableManipulator(DATABASE_NAME, URL, USER, PASSWORD, "user_grocery_list");
-            lm.addItemToTable();
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+        // Initialize UI elements
+        itemNameInput = findViewById(R.id.itemNameInput);
+        itemExpirationDateInput = findViewById(R.id.itemExpirationDateInput);
+        daysBeforeInput = findViewById(R.id.daysBeforeInput);
+        categorySpinner = findViewById(R.id.categorySpinner);
+        notificationUnitSpinner = findViewById(R.id.notificationUnitSpinner);
+        addItemButton = findViewById(R.id.addItemButton);
+        viewItemsButton = findViewById(R.id.viewItemsButton);
+
+        // Initialize category adapter with default categories
+        categories.add("Dairy");
+        categories.add("Meat");
+        categories.add("Produce");
+        categories.add("Bakery");
+        categories.add("Other");
+
+        categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorySpinner.setAdapter(categoryAdapter);
+
+        // Initialize notification units adapter
+        unitAdapter = ArrayAdapter.createFromResource(this, R.array.notification_units, android.R.layout.simple_spinner_item);
+        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        notificationUnitSpinner.setAdapter(unitAdapter);
+
+        // Load categories from the database (optional)
+        new LoadCategoriesTask().execute();
+
+        // Add item with expiration date to the selected category
+        addItemButton.setOnClickListener(v -> {
+            String itemName = itemNameInput.getText().toString().trim();
+            String expirationDateString = itemExpirationDateInput.getText().toString().trim();
+            String notificationLengthString = daysBeforeInput.getText().toString().trim();
+            String selectedCategory = categorySpinner.getSelectedItem() != null ? categorySpinner.getSelectedItem().toString() : "";
+            String unit = notificationUnitSpinner.getSelectedItem() != null ? notificationUnitSpinner.getSelectedItem().toString() : "";
+
+            if (itemName.isEmpty()) {
+                itemNameInput.setError("Item name is required");
+                return;
+            }
+            if (expirationDateString.isEmpty()) {
+                itemExpirationDateInput.setError("Expiration date is required");
+                return;
+            }
+            if (notificationLengthString.isEmpty()) {
+                daysBeforeInput.setError("Notification length is required");
+                return;
+            }
+
+            // Parse expiration date
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+            Date expirationDate;
+            try {
+                expirationDate = sdf.parse(expirationDateString);
+            } catch (ParseException e) {
+                itemExpirationDateInput.setError("Invalid date format");
+                return;
+            }
+
+            int notificationLength;
+            try {
+                notificationLength = Integer.parseInt(notificationLengthString);
+            } catch (NumberFormatException e) {
+                daysBeforeInput.setError("Invalid number");
+                return;
+            }
+
+            // Proceed to add item
+            new AddItemTask(selectedCategory, itemName, expirationDateString, notificationLengthString, unit).execute();
+
+            itemNameInput.setText("");
+            itemExpirationDateInput.setText("");
+            daysBeforeInput.setText("");
+        });
+
+        // View saved items
+        viewItemsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SavedItemsActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    // AsyncTask to load categories (optional)
+    private class LoadCategoriesTask extends AsyncTask<Void, Void, ArrayList<String>> {
+
+        @Override
+        protected ArrayList<String> doInBackground(Void... voids) {
+            ArrayList<String> categoriesList = new ArrayList<>();
+            try {
+                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + TABLE_NAME);
+                while (rs.next()) {
+                    String category = rs.getString("category");
+                    if (!categoriesList.contains(category)) {
+                        categoriesList.add(category);
+                    }
+                }
+                rs.close();
+                statement.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return categoriesList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> categoriesList) {
+            if (!categoriesList.isEmpty()) {
+                categories.clear();
+                categories.addAll(categoriesList);
+                categoryAdapter.notifyDataSetChanged();
+            }
         }
     }
 
-    public void utilFun() throws SQLException {
-        new Thread(() -> {
-            StringBuilder records = new StringBuilder();
+    // AsyncTask to add item to database
+    private class AddItemTask extends AsyncTask<Void, Void, Boolean> {
+
+        private String category, itemName, expirationDate, notificationLength, unit;
+
+        public AddItemTask(String category, String itemName, String expirationDate, String notificationLength, String unit) {
+            this.category = category;
+            this.itemName = itemName;
+            this.expirationDate = expirationDate;
+            this.notificationLength = notificationLength;
+            this.unit = unit;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            boolean success = false;
             try {
-                Class.forName("com.mysql.jdbc.Driver");
                 Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 Statement statement = connection.createStatement();
-
-                ResultSet rs = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
-                while (rs.next()) {
-                    String columnValue = rs.getString("name");
-                    Log.d("Database Result", columnValue);
-                }
-
+                String query = "INSERT INTO " + TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
+                        + category + "', '" + itemName + "', '" + expirationDate + "', '" + notificationLength + "', '" + unit + "')";
+                statement.executeUpdate(query);
+                statement.close();
                 connection.close();
-
-            } catch (Exception e) {
+                success = true;
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
-            //Push working
-        }).start();
-    }
+            return success;
+        }
 
-    public void makeListDB() throws SQLException {
-        new Thread(() -> {
-            StringBuilder records = new StringBuilder();
-            try {
-                Class.forName("com.mysql.jdbc.Driver");
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                Statement statement = connection.createStatement();
-
-                //FIXME: Change table name to match user
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS " +
-                        //FIXME: Change to variable instead of string
-                        "user_grocery_list" + "(" +
-                        "id INT AUTO_INCREMENT PRIMARY KEY," +
-                        "name VARCHAR(255) NOT NULL," +
-                        "category VARCHAR (255)" +
-                        ");");
-
-                connection.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                Toast.makeText(MainActivity.this, "Item added successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "Failed to add item", Toast.LENGTH_SHORT).show();
             }
-
-        }).start();
+        }
     }
-
-
 }

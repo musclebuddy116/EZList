@@ -1,3 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">EZList</string>
+    <string name="add">Add</string>
+    <string name="delete">Delete</string>
+    <string name="item_name">Item Name</string>
+    <string name="expiration_date">Expiration Date (MM/DD/YYYY)</string>
+    <string name="days_before">Notification Length</string>
+    <string name="add_item">Add Item</string>
+    <string name="save_item">Save Item</string>
+    <string name="view_saved_items">View Saved Items</string>
+    <string name="category">Category</string>
+    <string name="notification_unit">Notification Unit</string>
+    <string name="no_items_found">No items found</string>
 </resources>
