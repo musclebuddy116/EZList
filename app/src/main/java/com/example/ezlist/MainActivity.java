@@ -1,10 +1,12 @@
 package com.example.ezlist;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -20,7 +22,9 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+
 import java.util.Locale;
 
 /**
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     // Change the type to ArrayAdapter<CharSequence>
     private ArrayAdapter<CharSequence> unitAdapter;
 
+    private Calendar calendar; // For DatePickerDialog
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,17 +72,35 @@ public class MainActivity extends AppCompatActivity {
         categories.add("Bakery");
         categories.add("Other");
 
-        categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categories);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Initialize category adapter with custom layout
+        categoryAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, categories);
+        categoryAdapter.setDropDownViewResource(R.layout.spinner_item);
         categorySpinner.setAdapter(categoryAdapter);
 
-        // Initialize notification units adapter
-        unitAdapter = ArrayAdapter.createFromResource(this, R.array.notification_units, android.R.layout.simple_spinner_item);
-        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Initialize notification units adapter with custom layout
+        unitAdapter = ArrayAdapter.createFromResource(this, R.array.notification_units, R.layout.spinner_item);
+        unitAdapter.setDropDownViewResource(R.layout.spinner_item);
         notificationUnitSpinner.setAdapter(unitAdapter);
 
         // Load categories from the database (optional)
         new LoadCategoriesTask().execute();
+
+        // Set up DatePickerDialog for expiration date input
+        calendar = Calendar.getInstance();
+        itemExpirationDateInput.setOnClickListener(v -> {
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, (view, selectedYear, selectedMonth, selectedDay) -> {
+                calendar.set(Calendar.YEAR, selectedYear);
+                calendar.set(Calendar.MONTH, selectedMonth);
+                calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+                itemExpirationDateInput.setText(sdf.format(calendar.getTime()));
+            }, year, month, day);
+            datePickerDialog.show();
+        });
 
         // Add item with expiration date to the selected category
         addItemButton.setOnClickListener(v -> {
