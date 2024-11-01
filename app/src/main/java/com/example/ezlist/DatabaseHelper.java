@@ -1,5 +1,7 @@
 package com.example.ezlist;
 
+import android.util.Log;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,7 +12,15 @@ public class DatabaseHelper {
     private static final String USER = "android";
     private static final String PASSWORD = "android";
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD); // Establishes the database connection
+    // Establishes the database connection and logs success or failure
+    public static Connection getConnection() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            Log.d("DatabaseHelper", "Database connection established successfully.");
+        } catch (SQLException e) {
+            Log.e("DatabaseHelper", "Database connection failed. Check your URL, username, or password.", e);
+        }
+        return connection;
     }
 }

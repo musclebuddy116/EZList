@@ -27,31 +27,27 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Database configuration
     private static final String DATABASE_NAME = "grocery_store_data";
     private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
     private static final String USER = "android";
     private static final String PASSWORD = "android";
     public static final String TABLE_NAME = "grocery_store";
 
-    // UI components
     private EditText itemNameInput, itemExpirationDateInput, daysBeforeInput;
     private Spinner categorySpinner, notificationUnitSpinner;
-    private Button addItemButton, viewItemsButton, registerButton; // Button for registering a new user
+    private Button addItemButton, viewItemsButton;
 
-    // Lists for managing categories and units
     private ArrayList<String> categories = new ArrayList<>();
     private ArrayAdapter<String> categoryAdapter;
     private ArrayAdapter<CharSequence> unitAdapter;
 
-    private Calendar calendar; // For managing date input in DatePickerDialog
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Linking UI components to XML layout
         itemNameInput = findViewById(R.id.itemNameInput);
         itemExpirationDateInput = findViewById(R.id.itemExpirationDateInput);
         daysBeforeInput = findViewById(R.id.daysBeforeInput);
@@ -59,29 +55,23 @@ public class MainActivity extends AppCompatActivity {
         notificationUnitSpinner = findViewById(R.id.notificationUnitSpinner);
         addItemButton = findViewById(R.id.addItemButton);
         viewItemsButton = findViewById(R.id.viewItemsButton);
-        registerButton = findViewById(R.id.registerButton); // Register button to open registration screen
 
-        // Predefined categories to be displayed in category spinner
         categories.add("Dairy");
         categories.add("Meat");
         categories.add("Produce");
         categories.add("Bakery");
         categories.add("Other");
 
-        // Setting up category adapter and applying it to category spinner
         categoryAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, categories);
         categoryAdapter.setDropDownViewResource(R.layout.spinner_item);
         categorySpinner.setAdapter(categoryAdapter);
 
-        // Setting up adapter for notification units and applying it to notificationUnitSpinner
         unitAdapter = ArrayAdapter.createFromResource(this, R.array.notification_units, R.layout.spinner_item);
         unitAdapter.setDropDownViewResource(R.layout.spinner_item);
         notificationUnitSpinner.setAdapter(unitAdapter);
 
-        // Load additional categories from the database
         new LoadCategoriesTask().execute();
 
-        // Set up a DatePickerDialog for selecting expiration date
         calendar = Calendar.getInstance();
         itemExpirationDateInput.setOnClickListener(v -> {
             int year = calendar.get(Calendar.YEAR);
@@ -89,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
 
             DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, (view, selectedYear, selectedMonth, selectedDay) -> {
-                // Set the selected date in the calendar and format it
                 calendar.set(Calendar.YEAR, selectedYear);
                 calendar.set(Calendar.MONTH, selectedMonth);
                 calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
@@ -99,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        // Set up listener for the button that adds an item to the database
         addItemButton.setOnClickListener(v -> {
             String itemName = itemNameInput.getText().toString().trim();
             String expirationDateString = itemExpirationDateInput.getText().toString().trim();
@@ -107,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
             String selectedCategory = categorySpinner.getSelectedItem() != null ? categorySpinner.getSelectedItem().toString() : "";
             String unit = notificationUnitSpinner.getSelectedItem() != null ? notificationUnitSpinner.getSelectedItem().toString() : "";
 
-            // Basic validation for required fields
             if (itemName.isEmpty()) {
                 itemNameInput.setError("Item name is required");
                 return;
@@ -121,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Parsing expiration date
             SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
             Date expirationDate;
             try {
@@ -131,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Parsing notification length
             int notificationLength;
             try {
                 notificationLength = Integer.parseInt(notificationLengthString);
@@ -140,29 +125,19 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
-            // Insert item into the database using AsyncTask
             new AddItemTask(selectedCategory, itemName, expirationDateString, notificationLengthString, unit).execute();
 
-            // Clear input fields after submission
             itemNameInput.setText("");
             itemExpirationDateInput.setText("");
             daysBeforeInput.setText("");
         });
 
-        // Listener to open SavedItemsActivity, displaying saved items
         viewItemsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SavedItemsActivity.class);
             startActivity(intent);
         });
-
-        // Listener to open RegisterActivity, allowing new user registration
-        registerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
     }
 
-    // AsyncTask to load categories from the database into the spinner
     private class LoadCategoriesTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
         @Override
@@ -197,7 +172,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // AsyncTask to add an item to the database
     private class AddItemTask extends AsyncTask<Void, Void, Boolean> {
 
         private String category, itemName, expirationDate, notificationLength, unit;
