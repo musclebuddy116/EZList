@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                runOnUiThread(() -> Toast.makeText(this, "Database error", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(this, "Username Already In Use", Toast.LENGTH_SHORT).show());
             } finally {
                 // Clean up resources
                 try {

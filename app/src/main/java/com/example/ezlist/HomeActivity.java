@@ -33,7 +33,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Navigate to MainActivity for item entry when "Add Item" is clicked
         addItemButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, MainActivity.class);
+            Intent intent = new Intent(HomeActivity.this, GroceryActivity.class);
             startActivity(intent);
         });
 
