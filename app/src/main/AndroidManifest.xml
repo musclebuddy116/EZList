@@ -41,7 +41,7 @@
 
         <!-- Saved Items Activity -->
         <activity
-            android:name=".SavedItemsActivity"
+            android:name=".PantryActivity"
             android:exported="false" />
 
         <!-- Register Activity -->

@@ -15,13 +15,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class SavedItemsActivity extends AppCompatActivity {
+public class PantryActivity extends AppCompatActivity {
 
     private static final String DATABASE_NAME = "grocery_store_data";
     private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
     private static final String USER = "android";
     private static final String PASSWORD = "android";
-    public static final String TABLE_NAME = "grocery_store";
+    public static String TABLE_NAME = "pantry";
 
     private ListView itemsListView;
     private ArrayAdapter<String> itemsAdapter;
@@ -35,6 +35,8 @@ public class SavedItemsActivity extends AppCompatActivity {
         itemsListView = findViewById(R.id.itemsListView);
         itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemsList);
         itemsListView.setAdapter(itemsAdapter);
+
+        TABLE_NAME = Global.getUsername() + "_" + TABLE_NAME;
 
         new LoadItemsTask().execute();
     }
@@ -72,7 +74,7 @@ public class SavedItemsActivity extends AppCompatActivity {
                 itemsList.addAll(itemList);
                 itemsAdapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(SavedItemsActivity.this, "No items found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PantryActivity.this, "No items found", Toast.LENGTH_SHORT).show();
             }
         }
     }

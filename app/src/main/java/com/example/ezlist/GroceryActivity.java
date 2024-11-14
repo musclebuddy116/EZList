@@ -31,6 +31,7 @@ public class GroceryActivity extends AppCompatActivity {
     private static final String USER = "android";
     private static final String PASSWORD = "android";
     public static final String TABLE_NAME = "grocery_store";
+    public static String USER_TABLE_NAME = "_grocery_list";
 
     private EditText itemNameInput, daysBeforeInput;
     private Spinner categorySpinner, notificationUnitSpinner;
@@ -55,7 +56,7 @@ public class GroceryActivity extends AppCompatActivity {
         categorySpinner = findViewById(R.id.categorySpinner);
         notificationUnitSpinner = findViewById(R.id.notificationUnitSpinner);
         addItemButton = findViewById(R.id.addItemButton);
-        viewItemsButton = findViewById(R.id.viewItemsButton);
+        viewItemsButton = findViewById(R.id.viewPantry);
 
         categoryAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, categories);
         categoryAdapter.setDropDownViewResource(R.layout.spinner_item);
@@ -67,6 +68,8 @@ public class GroceryActivity extends AppCompatActivity {
 
         searchResultsAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.listItemText, searchResultsList);
         searchResultsListView.setAdapter(searchResultsAdapter);
+
+        USER_TABLE_NAME = Global.getUsername() + USER_TABLE_NAME;
 
 
         new GroceryActivity.LoadCategoriesTask().execute();
@@ -104,7 +107,7 @@ public class GroceryActivity extends AppCompatActivity {
         });
 
         viewItemsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(GroceryActivity.this, SavedItemsActivity.class);
+            Intent intent = new Intent(GroceryActivity.this, PantryActivity.class);
             startActivity(intent);
         });
         itemNameInput.addTextChangedListener(new TextWatcher() {
@@ -142,7 +145,7 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
     protected ArrayList<String> doInBackground(Void... voids) {
         ArrayList<String> itemsList = new ArrayList<>();
         try {
-            Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
             Statement statement = connection.createStatement();
             String query = "SELECT name FROM " + TABLE_NAME + " WHERE name LIKE '" + searchQuery + "%'";
             ResultSet rs = statement.executeQuery(query);
@@ -191,7 +194,7 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
         protected ArrayList<String> doInBackground(Void... voids) {
             ArrayList<String> categoriesList = new ArrayList<>();
             try {
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + TABLE_NAME);
                 while (rs.next()) {
@@ -233,10 +236,11 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
         @Override
         protected Boolean doInBackground(Void... voids) {
             boolean success = false;
+            new Table(USER_TABLE_NAME, TableType.GROCERY);
             try {
                 Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
                 Statement statement = connection.createStatement();
-                String query = "INSERT INTO " + TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
+                String query = "INSERT INTO " + USER_TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
                         + category + "', '" + itemName +  "', '" + notificationLength + "', '" + unit + "')";
                 statement.executeUpdate(query);
                 statement.close();

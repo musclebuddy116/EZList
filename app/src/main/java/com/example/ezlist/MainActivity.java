@@ -6,7 +6,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         categorySpinner = findViewById(R.id.categorySpinner);
         notificationUnitSpinner = findViewById(R.id.notificationUnitSpinner);
         addItemButton = findViewById(R.id.addItemButton);
-        viewItemsButton = findViewById(R.id.viewItemsButton);
+        viewItemsButton = findViewById(R.id.viewPantry);
 
         categories.add("Dairy");
         categories.add("Meat");
@@ -133,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         viewItemsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SavedItemsActivity.class);
+            Intent intent = new Intent(MainActivity.this, PantryActivity.class);
             startActivity(intent);
         });
     }

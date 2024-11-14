@@ -29,7 +29,7 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize welcome message and buttons for navigation
         TextView welcomeMessage = findViewById(R.id.welcomeMessage);
         Button addItemButton = findViewById(R.id.addItemButton);
-        Button viewItemsButton = findViewById(R.id.viewItemsButton);
+        Button viewItemsButton = findViewById(R.id.viewPantry);
 
         // Navigate to MainActivity for item entry when "Add Item" is clicked
         addItemButton.setOnClickListener(v -> {
@@ -37,9 +37,9 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Navigate to SavedItemsActivity when "View Saved Items" is clicked
+        // Navigate to SavedItemsActivity when "View Pantry" is clicked
         viewItemsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, SavedItemsActivity.class);
+            Intent intent = new Intent(HomeActivity.this, PantryActivity.class);
             startActivity(intent);
         });
 
