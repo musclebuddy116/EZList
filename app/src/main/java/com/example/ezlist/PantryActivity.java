@@ -16,12 +16,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class PantryActivity extends AppCompatActivity {
-
-    private static final String DATABASE_NAME = "grocery_store_data";
-    private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
-    private static final String USER = "android";
-    private static final String PASSWORD = "android";
-    public static String TABLE_NAME = "pantry";
+    public static String USER_TABLE_NAME = "pantry";
 
     private ListView itemsListView;
     private ArrayAdapter<String> itemsAdapter;
@@ -36,7 +31,7 @@ public class PantryActivity extends AppCompatActivity {
         itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemsList);
         itemsListView.setAdapter(itemsAdapter);
 
-        TABLE_NAME = Global.getUsername() + "_" + TABLE_NAME;
+        USER_TABLE_NAME = Global.getUsername() + "_" + USER_TABLE_NAME;
 
         new LoadItemsTask().execute();
     }
@@ -45,11 +40,12 @@ public class PantryActivity extends AppCompatActivity {
 
         @Override
         protected ArrayList<String> doInBackground(Void... voids) {
+            new Table(USER_TABLE_NAME, TableType.PANTRY);
             ArrayList<String> itemList = new ArrayList<>();
             try {
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT * FROM " + TABLE_NAME);
+                ResultSet rs = statement.executeQuery("SELECT * FROM " + USER_TABLE_NAME);
                 while (rs.next()) {
                     String expirationDate = rs.getString("expiration_date");
                     if (expirationDate == null || expirationDate.isEmpty()) {

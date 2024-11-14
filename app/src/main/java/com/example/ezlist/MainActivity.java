@@ -25,11 +25,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String DATABASE_NAME = "grocery_store_data";
-    private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
-    private static final String USER = "android";
-    private static final String PASSWORD = "android";
     public static final String TABLE_NAME = "grocery_store";
 
     private EditText itemNameInput, itemExpirationDateInput, daysBeforeInput;
@@ -143,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         protected ArrayList<String> doInBackground(Void... voids) {
             ArrayList<String> categoriesList = new ArrayList<>();
             try {
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
                 ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + TABLE_NAME);
                 while (rs.next()) {
@@ -187,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... voids) {
             boolean success = false;
             try {
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
                 String query = "INSERT INTO " + TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
                         + category + "', '" + itemName + "', '" + expirationDate + "', '" + notificationLength + "', '" + unit + "')";
