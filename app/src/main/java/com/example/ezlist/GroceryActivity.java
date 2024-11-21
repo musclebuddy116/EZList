@@ -26,15 +26,11 @@ import java.util.Calendar;
 import java.util.Locale;
 public class GroceryActivity extends AppCompatActivity {
 
-    private static final String DATABASE_NAME = "grocery_store_data";
-    private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
-    private static final String USER = "android";
-    private static final String PASSWORD = "android";
     public static final String TABLE_NAME = "grocery_store";
     public static String USER_TABLE_NAME = "_grocery_list";
 
     private EditText itemNameInput, daysBeforeInput;
-    private Spinner categorySpinner, notificationUnitSpinner;
+    private Spinner categorySpinner;
     private Button addItemButton, viewItemsButton;
     private ListView searchResultsListView;
     private ArrayAdapter<String> searchResultsAdapter;
@@ -52,19 +48,14 @@ public class GroceryActivity extends AppCompatActivity {
 
         itemNameInput = findViewById(R.id.itemNameInput);
         searchResultsListView = findViewById(R.id.searchResultsListView);
-        daysBeforeInput = findViewById(R.id.daysBeforeInput);
-        categorySpinner = findViewById(R.id.categorySpinner);
-        notificationUnitSpinner = findViewById(R.id.notificationUnitSpinner);
         addItemButton = findViewById(R.id.addItemButton);
         viewItemsButton = findViewById(R.id.viewPantry);
+        categorySpinner = findViewById(R.id.categorySpinner);
 
         categoryAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, categories);
         categoryAdapter.setDropDownViewResource(R.layout.spinner_item);
         categorySpinner.setAdapter(categoryAdapter);
 
-        unitAdapter = ArrayAdapter.createFromResource(this, R.array.notification_units, R.layout.spinner_item);
-        unitAdapter.setDropDownViewResource(R.layout.spinner_item);
-        notificationUnitSpinner.setAdapter(unitAdapter);
 
         searchResultsAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.listItemText, searchResultsList);
         searchResultsListView.setAdapter(searchResultsAdapter);
@@ -76,34 +67,17 @@ public class GroceryActivity extends AppCompatActivity {
 
         addItemButton.setOnClickListener(v -> {
             String itemName = itemNameInput.getText().toString().trim();
-            String notificationLengthString = daysBeforeInput.getText().toString().trim();
             String selectedCategory = categorySpinner.getSelectedItem() != null ? categorySpinner.getSelectedItem().toString() : "";
-            String unit = notificationUnitSpinner.getSelectedItem() != null ? notificationUnitSpinner.getSelectedItem().toString() : "";
 
             if (itemName.isEmpty()) {
                 itemNameInput.setError("Item name is required");
                 return;
             }
-            if (notificationLengthString.isEmpty()) {
-                daysBeforeInput.setError("Notification length is required");
-                return;
-            }
-
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
 
-            int notificationLength;
-            try {
-                notificationLength = Integer.parseInt(notificationLengthString);
-            } catch (NumberFormatException e) {
-                daysBeforeInput.setError("Invalid number");
-                return;
-            }
-
-            new GroceryActivity.AddItemTask(selectedCategory, itemName, notificationLengthString, unit).execute();
+            new GroceryActivity.AddItemTask(selectedCategory, itemName).execute();
 
             itemNameInput.setText("");
-            daysBeforeInput.setText("");
         });
 
         viewItemsButton.setOnClickListener(v -> {
@@ -226,11 +200,9 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
         private String category, itemName, notificationLength, unit;
 
-        public AddItemTask(String category, String itemName, String expirationDate, String notificationLength) {
+        public AddItemTask(String category, String itemName) {
             this.category = category;
             this.itemName = itemName;
-            this.notificationLength = notificationLength;
-            this.unit = unit;
         }
 
         @Override
@@ -238,10 +210,12 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
             boolean success = false;
             new Table(USER_TABLE_NAME, TableType.GROCERY);
             try {
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                String query = "INSERT INTO " + USER_TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
-                        + category + "', '" + itemName +  "', '" + notificationLength + "', '" + unit + "')";
+                String query = "INSERT INTO " + USER_TABLE_NAME + " (name, category)" +
+                        "VALUES ('" + itemName + "', '" + category + "')";
+                //String query = "INSERT INTO " + USER_TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
+                //        + category + "', '" + itemName +  "', '" + notificationLength + "', '" + unit + "')";
                 statement.executeUpdate(query);
                 statement.close();
                 connection.close();
