@@ -16,7 +16,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class PantryActivity extends AppCompatActivity {
-    public static String USER_TABLE_NAME = "pantry";
+    public static String USER_TABLE_NAME_STEM = "_pantry_list";
 
     private ListView itemsListView;
     private ArrayAdapter<String> itemsAdapter;
@@ -31,7 +31,10 @@ public class PantryActivity extends AppCompatActivity {
         itemsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemsList);
         itemsListView.setAdapter(itemsAdapter);
 
-        USER_TABLE_NAME = Global.getUsername() + "_" + USER_TABLE_NAME;
+        Global.setUserTableName(USER_TABLE_NAME_STEM);
+
+        itemsAdapter = new ItemAdapter(this, itemsList, Global.getUserTableName());
+        itemsListView.setAdapter(itemsAdapter);
 
         new LoadItemsTask().execute();
     }
@@ -40,18 +43,18 @@ public class PantryActivity extends AppCompatActivity {
 
         @Override
         protected ArrayList<String> doInBackground(Void... voids) {
-            new Table(USER_TABLE_NAME, TableType.PANTRY);
+            new Table(Global.getUserTableName(), TableType.PANTRY);
             ArrayList<String> itemList = new ArrayList<>();
             try {
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT * FROM " + USER_TABLE_NAME);
+                ResultSet rs = statement.executeQuery("SELECT name, category FROM " + Global.getUserTableName());
                 while (rs.next()) {
-                    String expirationDate = rs.getString("expiration_date");
-                    if (expirationDate == null || expirationDate.isEmpty()) {
-                        expirationDate = "N/A";
-                    }
-                    String item = rs.getString("name") + " - Expires on: " + expirationDate;
+                    String name = rs.getString("name");
+                    String category = rs.getString("category");
+
+                    // Format the string as "Name (Category)"
+                    String item = name + " (" + category + ")";
                     itemList.add(item);
                 }
                 rs.close();

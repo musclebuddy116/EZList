@@ -67,7 +67,7 @@
             android:id="@+id/viewPantry"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="View Pantry"
+            android:text="View Grocery List"
             android:textColor="#FFFFFF"
             android:backgroundTint="#3F51B5"
             app:layout_constraintTop_toBottomOf="@id/addItemButton"
@@ -75,18 +75,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp" />
 
-        <!-- Register Button to open RegisterActivity -->
-        <Button
-            android:id="@+id/registerButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Register"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#3F51B5"
-            app:layout_constraintTop_toBottomOf="@id/viewPantry"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

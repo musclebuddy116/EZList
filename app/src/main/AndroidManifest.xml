@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
 
     <application
         android:allowBackup="true"
@@ -18,42 +16,37 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EZList"
         tools:targetApi="31">
-
+        <activity
+            android:name=".ViewGroceryListActivity"
+            android:exported="false" />
         <!-- Login Activity - Set as Launcher -->
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Home Activity -->
+        </activity> <!-- Home Activity -->
         <activity
             android:name=".HomeActivity"
-            android:exported="false" />
-
-        <!-- Main Activity -->
+            android:exported="false" /> <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
-
-        <!-- Saved Items Activity -->
+            android:exported="true" /> <!-- Saved Items Activity -->
         <activity
             android:name=".PantryActivity"
-            android:exported="false" />
-
-        <!-- Register Activity -->
+            android:exported="false" /> <!-- Register Activity -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
-
-        <activity android:name=".GroceryActivity"
+        <activity
+            android:name=".GroceryActivity"
             android:exported="true" />
-
-        <activity android:name=".NotificationManagerActivity"
+        <activity
+            android:name=".NotificationManagerActivity"
             android:exported="true" />
-
     </application>
+
 </manifest>

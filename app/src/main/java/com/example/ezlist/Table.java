@@ -71,7 +71,10 @@ public class Table {
 
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + "(" +
-                        //FIXME: Insert table columns please
+                        "id INT AUTO_INCREMENT PRIMARY KEY," +
+                        "name VARCHAR(255) NOT NULL, " +
+                        "category VARCHAR(255)" +
+                        "shelf_life INT" +
                         ");");
 
                 connection.close();

@@ -29,11 +29,17 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize welcome message and buttons for navigation
         TextView welcomeMessage = findViewById(R.id.welcomeMessage);
         Button addItemButton = findViewById(R.id.addItemButton);
+        Button viewGroceryList = findViewById(R.id.viewGroceryList);
         Button viewItemsButton = findViewById(R.id.viewPantry);
 
         // Navigate to MainActivity for item entry when "Add Item" is clicked
         addItemButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, GroceryActivity.class);
+            startActivity(intent);
+        });
+
+        viewGroceryList.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, ViewGroceryListActivity.class);
             startActivity(intent);
         });
 

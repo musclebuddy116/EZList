@@ -30,13 +30,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />
 
+    <Button
+        android:id="@+id/viewGroceryList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Grocery List"
+        app:layout_constraintTop_toBottomOf="@id/addItemButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+
     <!-- View PantryButton -->
     <Button
         android:id="@+id/viewPantry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="View Pantry"
-        app:layout_constraintTop_toBottomOf="@id/addItemButton"
+        app:layout_constraintTop_toBottomOf="@id/viewGroceryList"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp" />

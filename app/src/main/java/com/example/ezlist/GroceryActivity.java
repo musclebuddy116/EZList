@@ -78,6 +78,9 @@ public class GroceryActivity extends AppCompatActivity {
             new GroceryActivity.AddItemTask(selectedCategory, itemName).execute();
 
             itemNameInput.setText("");
+            searchResultsList.clear();
+            searchResultsAdapter.notifyDataSetChanged();;
+            searchResultsListView.setVisibility(View.GONE);
         });
 
         viewItemsButton.setOnClickListener(v -> {
@@ -144,6 +147,10 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
             // If there's only one result, set it directly to the input field
             itemNameInput.setText(itemsList.get(0));
             searchResultsListView.setVisibility(View.GONE);
+            searchResultsList.clear();
+            searchResultsList.addAll(itemsList);
+            searchResultsAdapter.notifyDataSetChanged();
+            searchResultsListView.setVisibility(View.VISIBLE);
         } else {
             searchResultsListView.setVisibility(View.GONE);
         }
