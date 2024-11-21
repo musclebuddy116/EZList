@@ -20,14 +20,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
-public class GroceryActivity extends AppCompatActivity {
 
-    public static final String TABLE_NAME = "grocery_store";
-    public static String USER_TABLE_NAME = "_grocery_list";
+public class GroceryActivity extends AppCompatActivity {
+    public static String USER_TABLE_NAME_STEM = "_grocery_list";
 
     private EditText itemNameInput, daysBeforeInput;
     private Spinner categorySpinner;
@@ -60,7 +57,7 @@ public class GroceryActivity extends AppCompatActivity {
         searchResultsAdapter = new ArrayAdapter<>(this, R.layout.list_item, R.id.listItemText, searchResultsList);
         searchResultsListView.setAdapter(searchResultsAdapter);
 
-        USER_TABLE_NAME = Global.getUsername() + USER_TABLE_NAME;
+        Global.setUserTableName(USER_TABLE_NAME_STEM);
 
 
         new GroceryActivity.LoadCategoriesTask().execute();
@@ -84,7 +81,7 @@ public class GroceryActivity extends AppCompatActivity {
         });
 
         viewItemsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(GroceryActivity.this, PantryActivity.class);
+            Intent intent = new Intent(GroceryActivity.this, ViewGroceryListActivity.class);
             startActivity(intent);
         });
         itemNameInput.addTextChangedListener(new TextWatcher() {
@@ -124,7 +121,7 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
         try {
             Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
             Statement statement = connection.createStatement();
-            String query = "SELECT name FROM " + TABLE_NAME + " WHERE name LIKE '" + searchQuery + "%'";
+            String query = "SELECT name FROM " + Global.MAIN_TABLE_NAME + " WHERE name LIKE '" + searchQuery + "%'";
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()) {
                 itemsList.add(rs.getString("name"));
@@ -177,7 +174,7 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
             try {
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + TABLE_NAME);
+                ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + Global.MAIN_TABLE_NAME);
                 while (rs.next()) {
                     String category = rs.getString("category");
                     if (!categoriesList.contains(category)) {
@@ -215,11 +212,11 @@ private class SearchItemsTask extends AsyncTask<Void, Void, ArrayList<String>> {
         @Override
         protected Boolean doInBackground(Void... voids) {
             boolean success = false;
-            new Table(USER_TABLE_NAME, TableType.GROCERY);
+            new Table(Global.getUserTableName(), TableType.GROCERY);
             try {
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                String query = "INSERT INTO " + USER_TABLE_NAME + " (name, category)" +
+                String query = "INSERT INTO " + Global.getUserTableName() + " (name, category)" +
                         "VALUES ('" + itemName + "', '" + category + "')";
                 //String query = "INSERT INTO " + USER_TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
                 //        + category + "', '" + itemName +  "', '" + notificationLength + "', '" + unit + "')";

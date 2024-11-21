@@ -12,7 +12,6 @@ public class Table {
     //String PASSWORD;
     String TABLE_NAME;
     TableType tableType;
-    //FIXME: Constructor
     /*public Table(String DATABASE_NAME, String URL, String USER, String PASSWORD, String TABLE_NAME) {
         this.DATABASE_NAME = DATABASE_NAME;
         this.URL = URL;

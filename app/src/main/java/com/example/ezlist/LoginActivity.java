@@ -91,6 +91,12 @@ public class LoginActivity extends AppCompatActivity {
                             // User exists, login successful
                             Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
                             Global.setUsername(username);
+                            String stem = "_grocery_list";
+                            Global.setUserTableName(stem);
+                            new Table(Global.getUserTableName(), TableType.GROCERY);
+                            stem = "_pantry_list";
+                            Global.setUserTableName(stem);
+                            new Table(Global.getUserTableName(), TableType.PANTRY);
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             startActivity(intent);
                             finish();
