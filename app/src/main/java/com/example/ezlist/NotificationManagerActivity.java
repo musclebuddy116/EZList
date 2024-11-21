@@ -168,7 +168,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
             if (itemsList.size() == 1 && !shelfList.isEmpty()) {
                 itemNameInput.setText(itemsList.get(0));
                 int shelfLifeMinutes = shelfList.get(0);
-                long delayInMillis = shelfLifeMinutes  * 60 * 1000;
+                long delayInMillis = shelfLifeMinutes  * 1000;
                 handler.postDelayed(() -> sendNotification(itemsList.get(0)), delayInMillis);
                 searchResultsListView.setVisibility(View.GONE);
             } else {
