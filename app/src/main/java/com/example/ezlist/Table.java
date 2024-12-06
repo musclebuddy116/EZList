@@ -21,6 +21,7 @@ public class Table {
         makeTable();
     }*/
 
+    // Constructor to initialize table name and type, then call appropriate table creation method
     public Table(String TABLE_NAME, TableType type) {
         this.TABLE_NAME = TABLE_NAME;
         this.tableType = type;
@@ -37,13 +38,16 @@ public class Table {
         }
     }
 
+    // Method to create the 'grocery' table
     void makeGroceryTable() {
         new Thread(() -> {
             try {
+                // Load the MySQL driver and establish a connection
                 Class.forName("com.mysql.jdbc.Driver");
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
 
+                // Execute the SQL statement to create the table
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + "(" +
                         "id INT AUTO_INCREMENT PRIMARY KEY," +
@@ -51,6 +55,7 @@ public class Table {
                         "category VARCHAR (255)" +
                         ");");
 
+
                 connection.close();
 
             } catch (Exception e) {
@@ -60,20 +65,23 @@ public class Table {
         }).start();
     }
 
+    // Method to create the 'pantry' table
     void makePantryTable() {
         new Thread(() -> {
             StringBuilder records = new StringBuilder();
             try {
+                // Load the MySQL driver and establish a connection
                 Class.forName("com.mysql.jdbc.Driver");
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
 
+                // Execute the SQL statement to create the table
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + "(" +
                         "id INT AUTO_INCREMENT PRIMARY KEY," +
                         "name VARCHAR(255) NOT NULL, " +
-                        "category VARCHAR(255)" +
-                        "shelf_life INT" +
+                        "category VARCHAR(255)," +
+                        "shelf_life INT" +  // Add shelf_life column
                         ");");
 
                 connection.close();
@@ -85,14 +93,17 @@ public class Table {
         }).start();
     }
 
+    // Method to create the 'recipe' table (currently not implemented)
     void makeRecipeTable() {
         new Thread(() -> {
             StringBuilder records = new StringBuilder();
             try {
+                // Load the MySQL driver and establish a connection
                 Class.forName("com.mysql.jdbc.Driver");
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
 
+                // Execute the SQL statement to create the table (unfinished)
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + "(" +
                         //FIXME: Insert table columns please

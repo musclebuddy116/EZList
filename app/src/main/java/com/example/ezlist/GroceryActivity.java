@@ -62,9 +62,10 @@ public class GroceryActivity extends AppCompatActivity {
 
         USER_TABLE_NAME = Global.getUsername() + USER_TABLE_NAME;
 
-
+        // Load categories from the database
         new GroceryActivity.LoadCategoriesTask().execute();
 
+        // Add item button click listener
         addItemButton.setOnClickListener(v -> {
             String itemName = itemNameInput.getText().toString().trim();
             String selectedCategory = categorySpinner.getSelectedItem() != null ? categorySpinner.getSelectedItem().toString() : "";
@@ -74,7 +75,7 @@ public class GroceryActivity extends AppCompatActivity {
                 return;
             }
 
-
+            // Add the item to the user's list
             new GroceryActivity.AddItemTask(selectedCategory, itemName).execute();
 
             itemNameInput.setText("");
@@ -84,6 +85,7 @@ public class GroceryActivity extends AppCompatActivity {
             Intent intent = new Intent(GroceryActivity.this, PantryActivity.class);
             startActivity(intent);
         });
+        // Search functionality for item name input
         itemNameInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -101,6 +103,7 @@ public class GroceryActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+        // Set the selected item in the input field when clicked from search results
         searchResultsListView.setOnItemClickListener((parent, view, position, id) -> {
             String selectedItem = searchResultsList.get(position);
 

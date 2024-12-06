@@ -23,6 +23,7 @@ public class GroceryListAdapter extends BaseAdapter {
     private List<Item> items;
     private DatabaseHelper dbHelper;
 
+    // Constructor to initialize the adapter with context, items, and database helper
     public GroceryListAdapter(Context context, List<Item> items, DatabaseHelper dbHelper) {;
         this.context = context;
         this.items = items;
@@ -42,6 +43,7 @@ public class GroceryListAdapter extends BaseAdapter {
     }
 
     public View getView(int position, View convertView, ViewGroup parent) {
+        // Reuse an existing view if available, otherwise inflate a new one
         if(convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.list_item_grocery, parent, false);
         }
@@ -52,9 +54,11 @@ public class GroceryListAdapter extends BaseAdapter {
         Item item = items.get(position);
         itemName.setText(item.name);
 
+        // Handle checkbox state change to update the database and remove the item
         itemCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked) {
                 try {
+                    // Move the item to the pantry and update the list
                     dbHelper.moveItemToPantry(item.name, item.category, item.shelf_life);
                     items.remove(position);
                     notifyDataSetChanged();
@@ -64,6 +68,6 @@ public class GroceryListAdapter extends BaseAdapter {
             }
         });
 
-        return convertView;
+        return convertView; // Return the updated view for the list item
     }
 }

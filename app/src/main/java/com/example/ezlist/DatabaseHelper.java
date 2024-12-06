@@ -27,10 +27,12 @@ public class DatabaseHelper{
         return connection;
     }
 
+    // Retrieves all items from the user's table
     public List<Item> getAllItems() throws SQLException {
         List<Item> items = new ArrayList<>();
         String query = "SELECT * FROM "  + Global.getUserTableName();
 
+        // Execute the query and populate the list with item data
         try(Connection connection = getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(query); ResultSet rs = preparedStatement.executeQuery()) {
             while(rs.next()) {
                 int id = rs.getInt("id");
@@ -43,17 +45,20 @@ public class DatabaseHelper{
         return items;
     }
 
+    // Moves an item from the grocery table to the pantry table
     public void moveItemToPantry(String name, String category, int shelf_life) throws SQLException {
         Connection connection = getConnection();
         connection.setAutoCommit(false);
 
         try {
+            // Remove the item from the current table
             String deleteQuery = "DELETE FROM " + Global.getUserTableName() + " WHERE name = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
                 preparedStatement.setString(1, name);
                 preparedStatement.executeUpdate();
             }
 
+            // Insert the item into the pantry table
             Global.setUserTableName("_pantry_list");
             String insertQuery = "INSERT INTO " + Global.getUserTableName() + " (name, category, shelf_life) VALUES (?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {

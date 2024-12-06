@@ -73,6 +73,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
 
+        // Initialize UI elements
         itemNameInput = findViewById(R.id.itemNameInput);
         searchResultsListView = findViewById(R.id.searchResultsListView);
         submitButton = findViewById(R.id.submitButton);
@@ -86,6 +87,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
         }
+        // Handle submit button clicks
         submitButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint({"MissingPermission", "NotificationPermission"})
             @Override
@@ -98,6 +100,8 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
                 }
             }
         });
+
+        // Handle text input changes
         itemNameInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -117,6 +121,8 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
             public void afterTextChanged(Editable s) {
             }
         });
+
+        // Handle item selection from search results
         searchResultsListView.setOnItemClickListener((parent, view, position, id) -> {
             String selectedItem = searchResultsList.get(position);
 
@@ -128,6 +134,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
 
     }
 
+    // AsyncTask to search for items in the database
     private class SearchItemTask extends AsyncTask<Void, Void, ArrayList<String>> {
         private String searchQuery;
 
@@ -139,6 +146,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
         protected ArrayList<String> doInBackground(Void... voids) {
             ArrayList<String> itemsList = new ArrayList<>();
             try {
+                // Connect to the database and fetch items
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
                 String query = "SELECT name, shelf_life FROM " + Global.MAIN_TABLE_NAME + " WHERE name LIKE '" + searchQuery + "%'";
@@ -172,6 +180,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
         }
 
 
+        // Display filtered search results
         private void displayFilteredItems(ArrayList<String> itemsList) {
             if (searchResultsAdapter != null) {
                 searchResultsList.clear();
@@ -185,6 +194,7 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
             }
         }
 
+        // Send a notification for expiring items
         private void sendNotification(String itemName) {
             if (notifiedItems.contains(itemName)) {
                 Log.d("NotificationManager", "Notification for " + itemName + " already sent.");

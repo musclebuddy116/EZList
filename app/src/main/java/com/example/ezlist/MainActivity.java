@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize UI elements
         itemNameInput = findViewById(R.id.itemNameInput);
         itemExpirationDateInput = findViewById(R.id.itemExpirationDateInput);
         daysBeforeInput = findViewById(R.id.daysBeforeInput);
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         addItemButton = findViewById(R.id.addItemButton);
         viewItemsButton = findViewById(R.id.viewPantry);
 
+        // Prepopulate categories with default values
         categories.add("Dairy");
         categories.add("Meat");
         categories.add("Produce");
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         unitAdapter.setDropDownViewResource(R.layout.spinner_item);
         notificationUnitSpinner.setAdapter(unitAdapter);
 
+        // Load additional categories from the database asynchronously
         new LoadCategoriesTask().execute();
 
         calendar = Calendar.getInstance();
@@ -124,12 +127,14 @@ public class MainActivity extends AppCompatActivity {
             daysBeforeInput.setText("");
         });
 
+        // Handle the "View Pantry" button click
         viewItemsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, PantryActivity.class);
             startActivity(intent);
         });
     }
 
+    // AsyncTask for loading categories from the database
     private class LoadCategoriesTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
         @Override
@@ -164,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // AsyncTask for adding an item to the database
     private class AddItemTask extends AsyncTask<Void, Void, Boolean> {
 
         private String category, itemName, expirationDate, notificationLength, unit;
@@ -194,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
             return success;
         }
 
+        // Notify the user whether the operation succeeded
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
