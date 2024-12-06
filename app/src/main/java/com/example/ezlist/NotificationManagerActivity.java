@@ -35,11 +35,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NotificationManagerActivity extends AppCompatActivity { // Renamed to avoid conflict
-    private static final String DATABASE_NAME = "grocery_store_data";
-    private static final String URL = "jdbc:mysql://18.117.171.203:3306/" + DATABASE_NAME;
-    private static final String USER = "android";
-    private static final String PASSWORD = "android";
-    private static final String TABLE_NAME = "grocery_store";
     private Handler handler = new Handler(Looper.getMainLooper());
 
     private EditText itemNameInput;
@@ -144,9 +139,9 @@ public class NotificationManagerActivity extends AppCompatActivity { // Renamed 
         protected ArrayList<String> doInBackground(Void... voids) {
             ArrayList<String> itemsList = new ArrayList<>();
             try {
-                Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                String query = "SELECT name, shelf_life FROM " + TABLE_NAME + " WHERE name LIKE '" + searchQuery + "%'";
+                String query = "SELECT name, shelf_life FROM " + Global.MAIN_TABLE_NAME + " WHERE name LIKE '" + searchQuery + "%'";
                 ResultSet rs = statement.executeQuery(query);
                 while (rs.next()) {
                     itemsList.add(rs.getString("name"));

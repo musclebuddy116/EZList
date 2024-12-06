@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String TABLE_NAME = "grocery_store";
-
     private EditText itemNameInput, itemExpirationDateInput, daysBeforeInput;
     private Spinner categorySpinner, notificationUnitSpinner;
     private Button addItemButton, viewItemsButton;
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + TABLE_NAME);
+                ResultSet rs = statement.executeQuery("SELECT DISTINCT category FROM " + Global.MAIN_TABLE_NAME);
                 while (rs.next()) {
                     String category = rs.getString("category");
                     if (!categoriesList.contains(category)) {
@@ -184,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Connection connection = DriverManager.getConnection(Global.URL, Global.USER, Global.PASSWORD);
                 Statement statement = connection.createStatement();
-                String query = "INSERT INTO " + TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
+                String query = "INSERT INTO " + Global.MAIN_TABLE_NAME + " (category, name, expiration_date, notification_length, unit) VALUES ('"
                         + category + "', '" + itemName + "', '" + expirationDate + "', '" + notificationLength + "', '" + unit + "')";
                 statement.executeUpdate(query);
                 statement.close();

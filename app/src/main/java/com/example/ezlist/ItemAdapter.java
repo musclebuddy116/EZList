@@ -1,5 +1,4 @@
 package com.example.ezlist;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -10,47 +9,38 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
 public class ItemAdapter extends ArrayAdapter<String> {
     private Context context;
     private ArrayList<String> items;
     private String tableName;
-
     public ItemAdapter(Context context, ArrayList<String> items, String tableName) {
         super(context, 0, items);
         this.context = context;
         this.items = items;
         this.tableName = tableName;
     }
-
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.list_item_with_button, parent, false);
         }
-
         TextView itemTextView = convertView.findViewById(R.id.itemTextView);
         ImageButton removeButton = convertView.findViewById(R.id.removeButton);
-
         // Set the item text
         String item = items.get(position);
         itemTextView.setText(item);
-
         // Handle the remove button click
         removeButton.setOnClickListener(v -> {
             String itemName = item.split(" \\(")[0]; // Extract the name from the string
             removeItemFromDatabase(itemName, position);
         });
-
         return convertView;
     }
-
     @SuppressLint("StaticFieldLeak")
     private void removeItemFromDatabase(String itemName, int position) {
         new AsyncTask<Void, Void, Boolean>() {
@@ -71,7 +61,6 @@ public class ItemAdapter extends ArrayAdapter<String> {
                     return false;
                 }
             }
-
             @Override
             protected void onPostExecute(Boolean success) {
                 if (success) {

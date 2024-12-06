@@ -1,7 +1,5 @@
 package com.example.ezlist;
 
-import static com.example.ezlist.R.*;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -31,18 +29,11 @@ public class HomeActivity extends AppCompatActivity {
         // Initialize welcome message and buttons for navigation
         TextView welcomeMessage = findViewById(R.id.welcomeMessage);
         Button addItemButton = findViewById(R.id.addItemButton);
-        Button viewGroceryList = findViewById(R.id.viewGroceryList);
         Button viewItemsButton = findViewById(R.id.viewPantry);
 
         // Navigate to MainActivity for item entry when "Add Item" is clicked
         addItemButton.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, GroceryActivity.class);
-            startActivity(intent);
-        });
-
-        viewGroceryList.setOnClickListener(v -> {
-            //CHANGE TO GROCERYLISTVIEW
-            Intent intent =new Intent(HomeActivity.this, PantryActivity.class);
             startActivity(intent);
         });
 

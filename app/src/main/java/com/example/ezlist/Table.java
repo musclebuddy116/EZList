@@ -12,7 +12,6 @@ public class Table {
     //String PASSWORD;
     String TABLE_NAME;
     TableType tableType;
-    //FIXME: Constructor
     /*public Table(String DATABASE_NAME, String URL, String USER, String PASSWORD, String TABLE_NAME) {
         this.DATABASE_NAME = DATABASE_NAME;
         this.URL = URL;
@@ -71,7 +70,10 @@ public class Table {
 
                 statement.executeUpdate("CREATE TABLE IF NOT EXISTS " +
                         TABLE_NAME + "(" +
-                        //FIXME: Insert table columns please
+                        "id INT AUTO_INCREMENT PRIMARY KEY," +
+                        "name VARCHAR(255) NOT NULL, " +
+                        "category VARCHAR(255)" +
+                        "shelf_life INT" +
                         ");");
 
                 connection.close();
